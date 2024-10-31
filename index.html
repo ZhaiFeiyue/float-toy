@@ -286,8 +286,36 @@
 <script>
   const { Float16Array } = float16;
 
+  function float64ToBits(doubleNumber) {
+    // Check if the input is a valid number
+    if (typeof doubleNumber !== "number")
+      throw new Error("A float number is expected.");
+
+    // Create an 8-byte ArrayBuffer to store the double
+    var buffer = new ArrayBuffer(8);
+    // Create a Float64Array view on the buffer and store the double number
+    (new Float64Array(buffer))[0] = doubleNumber;
+    // Create a Uint32Array view on the buffer to access the bits as integers
+    var uint32Array = new Uint32Array(buffer);
+
+    // Combine the two 32-bit integers into a 64-bit binary string
+    let binaryString = "";
+    for (let i = 1; i >= 0; --i) {
+      var bits = uint32Array[i].toString(2).padStart(32, "0");
+      binaryString += bits;
+    }
+
+    // Extract the sign bit, exponent, and mantissa
+    var signBit = binaryString.substring(0, 1);
+    var exponentBits = binaryString.substring(1, 12);
+    var mantissaBits = binaryString.substring(12, 64);
+
+    // Return the sign, exponent, and mantissa as an array
+    return [signBit, exponentBits, mantissaBits];
+  }
+
   class FloatArray {
-    constructor(num_sign = 1, num_e = 5, num_m = 10, custom_func = []) {
+    constructor(init, num_sign = 1, num_e = 5, num_m = 10, custom_func = []) {
       this.num_s = num_sign;
       this.num_e = num_e;
       this.num_m = num_m;
@@ -297,6 +325,8 @@
         this.Bits[i] = 0;
       }
       this.custom_func = custom_func;
+
+      this.fromFloat(init);
     }
 
     click(index) {
@@ -358,7 +388,7 @@
       }
       var fraction = this.getF();
       var float_output = this.getS() * fraction * 2 ** this.getE();
-      return float_output.toPrecision(Math.ceil(Math.log10(2**(this.num_m + 1))));
+      return float_output.toPrecision(Math.ceil(Math.log10(2 ** (this.num_m + 1))));
     }
 
     fromHex(hexstr) {
@@ -372,7 +402,34 @@
 
     fromFloat(f) {
       // f should be represented by float64
+      var out = float64ToBits(f);
+      this.Bits[0] = parseInt(out[0], 2);
 
+      for (var i = 0; i < this.num_m; i++) {
+        this.Bits[this.num_s + this.num_e + i] = parseInt(out[2][i], 2);
+      }
+
+      if (out[1] == "00000000000") {
+        for (var i = 0; i < this.num_e; i++) {
+          this.Bits[this.num_s + i] = 0;
+        }
+        return;
+      }
+
+      var newExponentBias = (1 << (this.num_e - 1)) - 1;
+      var oldExponentBias = (1 << (11 - 1)) - 1;
+      var exponent = 0;
+
+      for (var i = 0; i < out[1].length; i++) {
+        var bit = parseInt(out[1][i], 2);
+        exponent += bit << (11 - i - 1);
+      }
+
+      var new_e = newExponentBias + exponent - oldExponentBias;
+      var binary = new_e.toString(2).padStart(this.num_e, '0');
+      for (var i = 0; i < binary.length; i++) {
+        this.Bits[this.num_s + i] = parseInt(binary[i], 2);
+      }
     }
 
     toHex() {
@@ -517,7 +574,7 @@
           '&nbsp;&nbsp;&times;&nbsp;&nbsp;' +
           '<span class="exponent">2<sup>' + array.getE() + '</sup></span>' +
           '&nbsp;&nbsp;&times;&nbsp;&nbsp;' +
-          '<span class="fraction">' + array.getF().toPrecision(Math.ceil(Math.log10(2**(array.num_m + 1))))+ '</span>';
+          '<span class="fraction">' + array.getF().toPrecision(Math.ceil(Math.log10(2 ** (array.num_m + 1)))) + '</span>';
       }
 
       render();
@@ -586,14 +643,14 @@
       return out + "NaN";
     }
 
-    load(new FloatArray(1, 4, 3, [check_e4m3_nan, check_flaot16_zero]), document.getElementById('inpute4m3'), document.getElementById('outpute4m3'), document.getElementById('helpe4m3'), document.getElementById('hexe4m3'));
-    load(new FloatArray(1, 5, 2, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('inpute5m2'), document.getElementById('outpute5m2'), document.getElementById('helpe5m2'), document.getElementById('hexe5m2'));
-    load(new FloatArray(1, 5, 10, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('input16'), document.getElementById('output16'), document.getElementById('help16'), document.getElementById('hex16'));
-    load(new FloatArray(1, 8, 7, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('inputbf16'), document.getElementById('outputbf16'), document.getElementById('helpbf16'), document.getElementById('hexbf16'));
-    load(new FloatArray(1, 8, 10, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('inputtf32'), document.getElementById('outputtf32'), document.getElementById('helptf32'), document.getElementById('hextf32'), 10);
-    load(new FloatArray(1, 7, 16, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('inputfp24'), document.getElementById('outputfp24'), document.getElementById('helpfp24'), document.getElementById('hexfp24'), 23);
-    load(new FloatArray(1, 8, 23, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('input32'), document.getElementById('output32'), document.getElementById('help32'), document.getElementById('hex32'), 23);
-    load(new FloatArray(1, 11, 52, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('input64'), document.getElementById('output64'), document.getElementById('help64'), document.getElementById('hex64'), 52);
+    load(new FloatArray(Math.PI, 1, 4, 3, [check_e4m3_nan, check_flaot16_zero]), document.getElementById('inpute4m3'), document.getElementById('outpute4m3'), document.getElementById('helpe4m3'), document.getElementById('hexe4m3'));
+    load(new FloatArray(Math.PI, 1, 5, 2, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('inpute5m2'), document.getElementById('outpute5m2'), document.getElementById('helpe5m2'), document.getElementById('hexe5m2'));
+    load(new FloatArray(Math.PI, 1, 5, 10, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('input16'), document.getElementById('output16'), document.getElementById('help16'), document.getElementById('hex16'));
+    load(new FloatArray(Math.PI, 1, 8, 7, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('inputbf16'), document.getElementById('outputbf16'), document.getElementById('helpbf16'), document.getElementById('hexbf16'));
+    load(new FloatArray(Math.PI, 1, 8, 10, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('inputtf32'), document.getElementById('outputtf32'), document.getElementById('helptf32'), document.getElementById('hextf32'), 10);
+    load(new FloatArray(Math.PI, 1, 7, 16, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('inputfp24'), document.getElementById('outputfp24'), document.getElementById('helpfp24'), document.getElementById('hexfp24'), 23);
+    load(new FloatArray(Math.PI, 1, 8, 23, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('input32'), document.getElementById('output32'), document.getElementById('help32'), document.getElementById('hex32'), 23);
+    load(new FloatArray(Math.PI, 1, 11, 52, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('input64'), document.getElementById('output64'), document.getElementById('help64'), document.getElementById('hex64'), 52);
 
   })();
 
