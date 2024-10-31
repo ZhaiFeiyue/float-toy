@@ -32,13 +32,29 @@
     text-align: center;
   }
 
-  td.sign { background: #BBF; }
-  td.exponent { background: #BFB; }
-  td.fraction { background: #FBB; }
+  td.sign {
+    background: #BBF;
+  }
 
-  td.sign.hover { background: #99D; }
-  td.exponent.hover { background: #9D9; }
-  td.fraction.hover { background: #D99; }
+  td.exponent {
+    background: #BFB;
+  }
+
+  td.fraction {
+    background: #FBB;
+  }
+
+  td.sign.hover {
+    background: #99D;
+  }
+
+  td.exponent.hover {
+    background: #9D9;
+  }
+
+  td.fraction.hover {
+    background: #D99;
+  }
 
   .input td {
     border: 1px solid #000;
@@ -78,7 +94,8 @@
     box-sizing: content-box;
   }
 
-  .output:hover, .output:focus {
+  .output:hover,
+  .output:focus {
     background: rgba(0, 0, 0, 0.066);
   }
 
@@ -111,18 +128,62 @@
     background: #DDD;
   }
 
-  span.sign { background: #DDF; }
-  span.exponent { background: #DFD; }
-  span.fraction { background: #FDD; }
+  span.sign {
+    background: #DDF;
+  }
 
+  span.exponent {
+    background: #DFD;
+  }
+
+  span.fraction {
+    background: #FDD;
+  }
 </style>
+
 <body>
   <h1>Float Toy</h1>
   <p>
     Click on a cell below to toggle bit values, or edit the hex or decimal values directly.
     Use this to build intuition for the IEEE floating-point format.
-    See Wikipedia for details on the <a href="https://en.wikipedia.org/wiki/Half-precision_floating-point_format">half-precision</a>, <a href="https://en.wikipedia.org/wiki/Single-precision_floating-point_format">single-precision</a> and <a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format">double-precision</a> floating-point formats.
+    See Wikipedia for details on the <a
+      href="https://en.wikipedia.org/wiki/Half-precision_floating-point_format">half-precision</a>, <a
+      href="https://en.wikipedia.org/wiki/Single-precision_floating-point_format">single-precision</a> and <a
+      href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format">double-precision</a> floating-point
+    formats.
   </p>
+
+  <h2>8-bit (E4M3)</h2>
+  <table>
+    <tr>
+      <td><span id="inpute4m3" class="input"></span></td>
+      <td class="zerox-col"><span class="zerox">&nbsp;&nbsp;=&nbsp;&nbsp;0x</span></td>
+      <td class="output-col"><input id="hexe4m3" class="output"></td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td><span id="helpe4m3" class="help"></span></td>
+      <td>&nbsp;&nbsp;=&nbsp;&nbsp;</td>
+      <td class="hex-col"><input id="outpute4m3" class="output"></td>
+    </tr>
+  </table>
+
+  <h2>8-bit (E5M2)</h2>
+  <table>
+    <tr>
+      <td><span id="inpute5m2" class="input"></span></td>
+      <td class="zerox-col"><span class="zerox">&nbsp;&nbsp;=&nbsp;&nbsp;0x</span></td>
+      <td class="output-col"><input id="hexe5m2" class="output"></td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td><span id="helpe5m2" class="help"></span></td>
+      <td>&nbsp;&nbsp;=&nbsp;&nbsp;</td>
+      <td class="hex-col"><input id="outpute5m2" class="output"></td>
+    </tr>
+  </table>
 
   <h2>16-bit (half)</h2>
   <table>
@@ -139,6 +200,55 @@
       <td class="hex-col"><input id="output16" class="output"></td>
     </tr>
   </table>
+
+  <h2>16-bit (bf16)</h2>
+  <table>
+    <tr>
+      <td><span id="inputbf16" class="input"></span></td>
+      <td class="zerox-col"><span class="zerox">&nbsp;&nbsp;=&nbsp;&nbsp;0x</span></td>
+      <td class="output-col"><input id="hexbf16" class="output"></td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td><span id="helpbf16" class="help"></span></td>
+      <td>&nbsp;&nbsp;=&nbsp;&nbsp;</td>
+      <td class="hex-col"><input id="outputbf16" class="output"></td>
+    </tr>
+  </table>
+
+  <h2>32-bit (TF32)</h2>
+  <table>
+    <tr>
+      <td><span id="inputtf32" class="input"></span></td>
+      <td class="zerox-col"><span class="zerox">&nbsp;&nbsp;=&nbsp;&nbsp;0x</span></td>
+      <td class="output-col"><input id="hextf32" class="output"></td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td><span id="helptf32" class="help"></span></td>
+      <td>&nbsp;&nbsp;=&nbsp;&nbsp;</td>
+      <td class="hex-col"><input id="outputtf32" class="output"></td>
+    </tr>
+  </table>
+
+  <h2>AMD FP24</h2>
+  <table>
+    <tr>
+      <td><span id="inputfp24" class="input"></span></td>
+      <td class="zerox-col"><span class="zerox">&nbsp;&nbsp;=&nbsp;&nbsp;0x</span></td>
+      <td class="output-col"><input id="hexfp24" class="output"></td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td><span id="helpfp24" class="help"></span></td>
+      <td>&nbsp;&nbsp;=&nbsp;&nbsp;</td>
+      <td class="hex-col"><input id="outputfp24" class="output"></td>
+    </tr>
+  </table>
+
 
   <h2>32-bit (float)</h2>
   <table>
@@ -174,281 +284,317 @@
 </body>
 <script src="./float16.js"></script>
 <script>
-const {Float16Array} = float16;
+  const { Float16Array } = float16;
 
-(function () {
-
-  function load(array, exponentBits, input, output, help, hex) {
-    var bytes = new Uint8Array(array.buffer);
-    var hexLength = bytes.length;
-
-    function reduceNumber(x) {
-      var copy = bytes.length === 2 ? new Float16Array(1) : bytes.length === 4 ? new Float32Array(1) : new Float64Array(1);
-      copy[0] = +x;
-      var value = copy[0];
-      x = value === 0 && 1 / value === -Infinity ? '-0' : value + '';
-
-      if (x === 'NaN' || x === 'Infinity' || x === '-Infinity') {
-        return x;
+  class FloatArray {
+    constructor(num_sign = 1, num_e = 5, num_m = 10, custom_func = []) {
+      this.num_s = num_sign;
+      this.num_e = num_e;
+      this.num_m = num_m;
+      this.num_bits = num_sign + num_e + num_m;
+      this.Bits = new Uint8Array(this.num_bits);
+      for (var i = 0; i < this.Bits.length; i++) {
+        this.Bits[i] = 0;
       }
-
-      var parts = /^([+-]?\d+)((?:\.\d+)?)((?:[eE][+-]?\d+)?)$/.exec(x);
-      var whole = parts[1];
-      var fraction = parts[2];
-      var exponent = parts[3];
-
-      // Remove digits one-by-one until the number changes
-      while (fraction.length > 0) {
-        // Try truncating
-        var truncatedFraction = fraction.slice(0, -1);
-        var text = whole + (truncatedFraction !== '.' ? truncatedFraction : '') + exponent;
-        copy[0] = +text;
-        var truncatedValue = copy[0];
-        if (truncatedValue === value) {
-          fraction = truncatedFraction;
-          x = text;
-          continue;
-        }
-
-        // Try rounding
-        var roundedFraction = truncatedFraction;
-        var i = roundedFraction.length - 1;
-        var zero = '0'.charCodeAt(0);
-        while (i > 0) {
-          var c = roundedFraction.charCodeAt(i) - zero;
-          roundedFraction = roundedFraction.slice(0, i) + String.fromCharCode((c + 1) % 10 + zero) + roundedFraction.slice(i + 1);
-          if (c < 9) break; // Do we need to carry?
-          i--;
-        }
-        var text = whole + (roundedFraction !== '.' ? roundedFraction : '') + exponent;
-        copy[0] = +text;
-        var roundedValue = copy[0];
-        if (roundedValue === value) {
-          fraction = roundedFraction;
-          x = text;
-          continue;
-        }
-
-        // Both numbers changed, keep the old value
-        break;
-      }
-
-      return x;
+      this.custom_func = custom_func;
     }
 
-    // Populate HTML
-    var html = '<table>';
-    // The bit numbers
-    html += '<tr>';
-    for (var i = 0; i < bytes.length; i++) {
-      for (var j = 0; j < 8; j++) {
-        var index = (bytes.length - i) * 8 - j;
-        if (j > 3) {
+    click(index) {
+      if (this.Bits[index] == 1) {
+        this.Bits[index] = 0;
+      } else {
+        this.Bits[index] = 1;
+      }
+    }
+
+    getE() {
+      var exponent = 0;
+      if (this.isExponentAllZero()) {
+        exponent = 1;
+      }
+
+      for (var i = 0; i < this.num_e; i++) {
+        var index = 1 + i;
+        var bit = this.Bits[index];
+        exponent += bit << (this.num_e - i - 1);
+      }
+      var exponentBias = (1 << (this.num_e - 1)) - 1;
+      exponent -= exponentBias;
+      return exponent;
+    }
+
+    getS() {
+      return (this.Bits[0] ? -1 : 1);
+    }
+
+    isExponentAllZero() {
+      var sum = 0;
+      for (var i = this.num_s; i < this.num_e + this.num_s; i++) {
+        sum += this.Bits[i];
+      }
+
+      return sum == 0;
+    }
+
+    getF() {
+      var base = 1.0;
+      if (this.isExponentAllZero()) {
+        base = 0.0;
+      }
+
+      var offset = this.num_s + this.num_e;
+      for (var i = offset; i < this.num_bits; i++) {
+        base += this.Bits[i] * 2 ** (offset - i - 1);
+      }
+      return base;
+    }
+
+    getFloat() {
+      for (var i = 0; i < this.custom_func.length; i++) {
+        var tmp = this.custom_func[i](this.num_s, this.num_e, this.num_m, this.Bits);
+        if (tmp != null) {
+          return tmp;
+        }
+      }
+      var fraction = this.getF();
+      var float_output = this.getS() * fraction * 2 ** this.getE();
+      return float_output.toPrecision(Math.ceil(Math.log10(2**(this.num_m + 1))));
+    }
+
+    fromHex(hexstr) {
+      for (var i = 0; i < hexstr.length; i++) {
+        var binstr = parseInt(hexstr[i], 16).toString(2).padStart(4, '0');
+        for (var j = 0; j < binstr.length; j++) {
+          this.Bits[i * 4 + j] = parseInt(binstr[j], 2);
+        }
+      }
+    }
+
+    fromFloat(f) {
+      // f should be represented by float64
+
+    }
+
+    toHex() {
+      var d = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
+      var output = '';
+      var tmp = 0;
+      for (var i = 0; i < this.Bits.length; i++) {
+        tmp += this.Bits[i] << 3 - (i % 4);
+        if ((i + 1) % 4 == 0) {
+          output += d[tmp];
+          tmp = 0;
+        }
+      }
+      if (this.Bits.length % 4 == 0) {
+        return output;
+      } else {
+        return output + d[tmp];
+      }
+
+    }
+
+    getHexLength() {
+      return (this.Bits.length - 1) / 4 + 1;
+    }
+  }
+
+  (function () {
+
+    function load(array, input, output, help, hex) {
+      // Populate HTML
+      var html = '<table>';
+      // The bit numbers
+      html += '<tr>';
+      for (var i = 0; i < array.num_bits; i++) {
+        var index = array.num_bits - i - 1;
+        if (index % 2 == 0) {
           html += '<td class="nibble">' + index + '</td>'
         } else {
           html += '<td class="dark nibble">' + index + '</td>'
         }
       }
-    }
-    html += '</tr>';
-    // The bits
-    html += '<tr>';
-    for (var i = 0; i < bytes.length; i++) {
-      for (var j = 0; j < 8; j++) {
-        var index = i * 8 + j;
+      html += '</tr>';
+      // The bits
+      html += '<tr>';
+      for (var i = 0; i < array.num_bits; i++) {
         var className =
-          index === 0 ? 'sign' :
-            index < 1 + exponentBits ? 'exponent' :
+          i === 0 ? 'sign' :
+            i < 1 + array.num_e ? 'exponent' :
               'fraction';
-        html += '<td data-index="' + index + '" class="' + className + '">0</td>';
+        html += '<td data-index="' + i + '" class="' + className + '">0</td>';
       }
-    }
-    html += '</tr></table>';
-    input.innerHTML = html;
+      html += '</tr></table>';
+      input.innerHTML = html;
 
-    // Grab elements
-    var elements = [];
-    for (var i = 0; i < bytes.length * 8; i++) {
-      (function (i) {
-        var element = input.querySelector('[data-index="' + i + '"]');
-        element.onmouseover = function () { this.classList.add('hover'); };
-        element.onmouseout = function () { this.classList.remove('hover'); };
-        elements.push(element);
-      })(i);
-    }
-
-    // Event handlers
-    function extractNumber() {
-      return +(output.value.replace(/\b(?:infinity|inf)\b/gi, 'Infinity'));
-    }
-    output.onkeydown = function (e) {
-      if (e.which === 13) {
-        e.preventDefault();
-        output.blur();
+      // Grab elements
+      var elements = [];
+      for (var i = 0; i < array.num_bits; i++) {
+        (function (i) {
+          var element = input.querySelector('[data-index="' + i + '"]');
+          element.onmouseover = function () { this.classList.add('hover'); };
+          element.onmouseout = function () { this.classList.remove('hover'); };
+          elements.push(element);
+        })(i);
       }
 
-      else if (e.which === 38) {
-        e.preventDefault();
-        output.value = reduceNumber(extractNumber() + 1);
-        output.select();
-        output.oninput();
+      // Event handlers
+      function extractNumber() {
+        return +(output.value.replace(/\b(?:infinity|inf|Inf)\b/gi, 'Infinity'));
       }
-
-      else if (e.which === 40) {
-        e.preventDefault();
-        output.value = reduceNumber(extractNumber() - 1);
-        output.select();
-        output.oninput();
-      }
-    };
-    output.onfocus = function () {
-      output.select();
-    };
-    output.oninput = function () {
-      array[0] = extractNumber();
-      render();
-    };
-    output.onblur = function () {
-      render();
-    };
-
-    hex.onkeydown = function (e) {
-      if (e.which === 13) {
-        e.preventDefault();
-        hex.blur();
-      }
-    };
-    hex.onfocus = function () {
-      hex.select();
-    };
-    hex.oninput = function () {
-      var hexAlphabet = '0123456789abcdefABCDEF';
-      var validHexCharas = hex.value.split('').every(function (c) {
-        return hexAlphabet.split('').lastIndexOf(c) !== -1;
-      });
-      if (hex.value.length > (hexLength * 2) || validHexCharas === false) {
-        hex.value = hex.value.slice(0, -1);
-        return;
-      }
-
-      var tmpBytes = toByteArray(hex.value);
-      bytes.fill(0);
-      bytes.set(tmpBytes.reverse(), hexLength - tmpBytes.length);
-      render();
-    };
-    hex.onblur = function () {
-      render();
-    };
-
-    input.onmousedown = function (e) {
-      if ('index' in e.target.dataset) {
-        var index = e.target.dataset.index | 0;
-        var byteIndex = bytes.length - (index >> 3) - 1;
-        var byteMask = 1 << (7 - (index & 7));
-        var mouseDownValue = bytes[byteIndex] & byteMask ? 0 : 1;
-        bytes[byteIndex] ^= byteMask;
+      output.onkeydown = function (e) {
+        if (e.which === 13) {
+          e.preventDefault();
+          output.blur();
+        }
+      };
+      output.oninput = function () {
+        array.fromFloat(extractNumber())
         render();
+      };
+      output.onblur = function () {
+        render();
+      };
 
-        document.onmousemove = function (e2) {
-          if ('index' in e2.target.dataset) {
-            var index = e2.target.dataset.index | 0;
-            var byteIndex = bytes.length - (index >> 3) - 1;
-            var byteMask = 1 << (7 - (index & 7));
-            bytes[byteIndex] = (bytes[byteIndex] & ~byteMask) | (byteMask * mouseDownValue);
-            render();
-          }
-        };
+      hex.onkeydown = function (e) {
+        if (e.which === 13) {
+          e.preventDefault();
+          hex.blur();
+        }
+      };
+      hex.onfocus = function () {
+        hex.select();
+      };
+      hex.oninput = function () {
+        var hexAlphabet = '0123456789abcdefABCDEF';
+        var validHexCharas = hex.value.split('').every(function (c) {
+          return hexAlphabet.split('').lastIndexOf(c) !== -1;
+        });
+        var hexLength = array.getHexLength();
+        if (hex.value.length > hexLength || validHexCharas === false) {
+          hex.value = hex.value.slice(0, -1);
+        }
+        array.fromHex(hex.value);
+        render();
+      };
+      hex.onblur = function () {
+        render();
+      };
 
-        document.onmouseup = function () {
-          document.onmousemove = null;
-          document.onmouseup = null;
-        };
+      input.onmousedown = function (e) {
+        if ('index' in e.target.dataset) {
+          var index = e.target.dataset.index | 0;
+          array.click(index);
+          render();
+
+          document.onmouseup = function () {
+            document.onmousemove = null;
+            document.onmouseup = null;
+          };
+        }
+      };
+
+      // Update loop
+      function render() {
+        for (var i = 0; i < array.num_bits; i++) {
+          elements[i].textContent = array.Bits[i];
+        }
+
+        // Update views according to which input was edited
+        if (document.activeElement === hex) {
+          hex.value = array.toHex();
+          output.value = array.getFloat();
+        } else if (document.activeElement === output) {
+          output.value = array.getFloat();
+          hex.value = array.toHex();
+        } else {
+          output.value = array.getFloat();
+          hex.value = array.toHex();
+        }
+
+        help.innerHTML =
+          '<span class="sign">' + array.getS() + '</span>' +
+          '&nbsp;&nbsp;&times;&nbsp;&nbsp;' +
+          '<span class="exponent">2<sup>' + array.getE() + '</sup></span>' +
+          '&nbsp;&nbsp;&times;&nbsp;&nbsp;' +
+          '<span class="fraction">' + array.getF().toPrecision(Math.ceil(Math.log10(2**(array.num_m + 1))))+ '</span>';
       }
-    };
 
-    // Update loop
-    function render() {
-      for (var i = 0; i < bytes.length * 8; i++) {
-        elements[i].textContent = ((bytes[bytes.length - (i >> 3) - 1] >> (7 - (i & 7))) & 1);
-      }
-
-      // Figure out exponent
-      var exponent = 0;
-      for (var i = 0; i < exponentBits; i++) {
-        var index = 1 + i;
-        var bit = (bytes[bytes.length - (index >> 3) - 1] >> (7 - (index & 7))) & 1;
-        exponent += bit << (exponentBits - i - 1);
-      }
-      var exponentBias = (1 << (exponentBits - 1)) - 1;
-      exponent -= exponentBias;
-
-      // Figure out fraction
-      var copyBytes = new Uint8Array(bytes);
-      var copy = bytes.length === 2 ? new Float16Array(copyBytes.buffer) : bytes.length === 4 ? new Float32Array(copyBytes.buffer) : new Float64Array(copyBytes.buffer);
-      for (var i = 0; i < exponentBits; i++) {
-        var index = 1 + i;
-        var byteIndex = bytes.length - (index >> 3) - 1;
-        var byteMask = 1 << (7 - (index & 7));
-        copyBytes[byteIndex] = (copyBytes[byteIndex] & ~byteMask) | (i === 0 ? 0 : byteMask);
-      }
-      var signIndex = bytes.length - 1;
-      var signMask = 0x80;
-      var sign = copyBytes[signIndex] & signMask;
-      copyBytes[signIndex] &= ~signMask;
-      var fraction = copy[0];
-
-      // Handle denormal numbers
-      if (exponent === -exponentBias) {
-        exponent++;
-        fraction--;
-      }
-
-      // Update views according to which input was edited
-      if (document.activeElement === hex) {
-        var value = array[0];
-        output.value = reduceNumber(value === 0 && 1 / value === -Infinity ? '-0' : value);
-      } else if (document.activeElement === output) {
-        var tmpBytes = bytes.slice().reverse();
-        hex.value = toHexString(tmpBytes);
-      } else { // This branch is for when the individual bits get toggled
-        var value = array[0];
-        output.value = reduceNumber(value === 0 && 1 / value === -Infinity ? '-0' : value);
-        var tmpBytes = bytes.slice().reverse();
-        hex.value = toHexString(tmpBytes);
-      }
-
-      help.innerHTML =
-        '<span class="sign">' + (sign ? -1 : 1) + '</span>' +
-        '&nbsp;&nbsp;&times;&nbsp;&nbsp;' +
-        '<span class="exponent">2<sup>' + exponent + '</sup></span>' +
-        '&nbsp;&nbsp;&times;&nbsp;&nbsp;' +
-        '<span class="fraction">' + reduceNumber(fraction) + '</span>';
+      render();
     }
 
-    function toHexString(byteArray) {
-      return Array.from(byteArray, function (byte) {
-        return ('0' + byte.toString(16).toUpperCase()).slice(-2);
-      }).join('')
+    function check_e4m3_nan(s, e, m, input_array) {
+      var sum = 0;
+      for (var i = s; i < input_array.length; i++) {
+        sum += input_array[i];
+      }
+
+      var out = input_array[0] ? "-" : "";
+      if (sum != 7) {
+        return null;
+      }
+
+      return out + "NaN";
     }
 
-    function toByteArray(hexString) {
-      var result = [];
-      if (hexString.length % 2 == 1) {
-        hexString = hexString + '0';
+    function check_flaot16_zero(s, e, m, input_array) {
+      var sum = 0;
+      for (var i = s; i < input_array.length; i++) {
+        sum += input_array[i];
       }
-      for (var i = 0; i < hexString.length; i += 2) {
-        result.push(parseInt(hexString.substr(i, 2), 16));
+      var out = input_array[0] ? "-" : "";
+      if (sum == 0) {
+        return out + "0";
       }
-      return result;
+      return null;
     }
 
-    render();
-  }
+    function check_float16_inf(s, e, m, input_array) {
+      for (var i = s + e; i < input_array.length; i++) {
+        if (input_array[i] != 0) {
+          return null;
+        }
+      }
 
-  load(new Float16Array([Math.PI]), 5, document.getElementById('input16'), document.getElementById('output16'), document.getElementById('help16'), document.getElementById('hex16'));
-  load(new Float32Array([Math.PI]), 8, document.getElementById('input32'), document.getElementById('output32'), document.getElementById('help32'), document.getElementById('hex32'));
-  load(new Float64Array([Math.PI]), 11, document.getElementById('input64'), document.getElementById('output64'), document.getElementById('help64'), document.getElementById('hex64'));
+      for (var i = s; i < input_array.length - m; i++) {
+        if (input_array[i] != 1) {
+          return null;
+        }
+      }
 
-})();
+      var out = input_array[0] ? "-" : "";
+      return out + "Inf";
+    }
+
+    function check_float16_nan(s, e, m, input_array) {
+      for (var i = s; i < input_array.length - m; i++) {
+        if (input_array[i] != 1) {
+          return null;
+        }
+      }
+
+      var sum = 0;
+      for (var i = s + e; i < input_array.length; i++) {
+        sum += input_array[i];
+      }
+
+      var out = input_array[0] ? "-" : "";
+      if (sum == 0) {
+        return null;
+      }
+
+      return out + "NaN";
+    }
+
+    load(new FloatArray(1, 4, 3, [check_e4m3_nan, check_flaot16_zero]), document.getElementById('inpute4m3'), document.getElementById('outpute4m3'), document.getElementById('helpe4m3'), document.getElementById('hexe4m3'));
+    load(new FloatArray(1, 5, 2, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('inpute5m2'), document.getElementById('outpute5m2'), document.getElementById('helpe5m2'), document.getElementById('hexe5m2'));
+    load(new FloatArray(1, 5, 10, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('input16'), document.getElementById('output16'), document.getElementById('help16'), document.getElementById('hex16'));
+    load(new FloatArray(1, 8, 7, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('inputbf16'), document.getElementById('outputbf16'), document.getElementById('helpbf16'), document.getElementById('hexbf16'));
+    load(new FloatArray(1, 8, 10, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('inputtf32'), document.getElementById('outputtf32'), document.getElementById('helptf32'), document.getElementById('hextf32'), 10);
+    load(new FloatArray(1, 7, 16, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('inputfp24'), document.getElementById('outputfp24'), document.getElementById('helpfp24'), document.getElementById('hexfp24'), 23);
+    load(new FloatArray(1, 8, 23, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('input32'), document.getElementById('output32'), document.getElementById('help32'), document.getElementById('hex32'), 23);
+    load(new FloatArray(1, 11, 52, [check_float16_nan, check_float16_inf, check_flaot16_zero]), document.getElementById('input64'), document.getElementById('output64'), document.getElementById('help64'), document.getElementById('hex64'), 52);
+
+  })();
 
 </script>
